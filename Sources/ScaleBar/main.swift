@@ -15,8 +15,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             button.image = NSImage(systemSymbolName: "display", accessibilityDescription: "ScaleBar")
         }
 
-        // The walking skeleton can do exactly one thing: quit.
         let menu = NSMenu()
+
+        let displays = DisplayManager.connectedDisplays()
+        for display in displays {
+            let item = NSMenuItem(title: display.name, action: nil, keyEquivalent: "")
+            item.isEnabled = false
+            menu.addItem(item)
+        }
+
+        menu.addItem(.separator())
         menu.addItem(
             NSMenuItem(
                 title: "Quit ScaleBar",
