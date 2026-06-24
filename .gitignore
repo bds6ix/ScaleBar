@@ -8,5 +8,11 @@ Package.resolved
 *.xcworkspace
 DerivedData/
 
+# Build output
+*.app
+
+# Claude Code
+.claude/
+
 # macOS
 .DS_Store
