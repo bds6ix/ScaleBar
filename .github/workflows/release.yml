@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release binary
+        run: swift build -c release
+
+      - name: Assemble app bundle
+        run: |
+          mkdir -p Rescale.app/Contents/MacOS
+          cp .build/release/Rescale Rescale.app/Contents/MacOS/Rescale
+          cp Info.plist Rescale.app/Contents/
+
+      - name: Zip app bundle
+        run: zip -r Rescale.zip Rescale.app
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Rescale.zip
+          body: |
+            ## Install
+
+            1. Download **Rescale.zip** below
+            2. Unzip and drag **Rescale.app** to your Applications folder
+            3. Double-click to launch — macOS will block it on first run
+            4. Open **System Settings → Privacy & Security**, scroll to the bottom, and click **Open Anyway** next to the blocked app message
+
+            Rescale appears as a display icon in your menu bar — click it to switch display scaling.
+          generate_release_notes: true
