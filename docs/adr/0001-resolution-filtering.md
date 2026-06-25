@@ -40,8 +40,12 @@ U2718Q in portrait) and compared against System Settings:
 4. **Attempt to reverse-engineer macOS's exact 5** — no public API, would
    break across OS versions.
 
-### Native resolution detection pitfall
+### Native resolution detection pitfalls
 
+Two bugs were discovered during testing across three displays (Gigabyte M27U
+horizontal, Dell U2718Q portrait, MacBook Pro built-in):
+
+**Pitfall 1 — current mode pixel backing ≠ native resolution.**
 `CGDisplayCopyDisplayMode(displayID).pixelWidth` returns the pixel backing of
 the *current* mode, not the panel's native resolution. In a HiDPI mode, the
 pixel backing can exceed the physical panel resolution (e.g., 2880×5120 for a
@@ -49,8 +53,19 @@ pixel backing can exceed the physical panel resolution (e.g., 2880×5120 for a
 calculate "half native" incorrectly excluded the Larger Text option on the
 portrait Dell.
 
-**Fix:** find the largest LoDPI mode where `pixelWidth == width` — that's the
-true 1:1 native resolution.
+**Pitfall 2 — LoDPI modes can have a different aspect ratio than the panel.**
+MacBook displays expose LoDPI (1:1) modes at 16:10 (e.g., 3456×2160) even
+though the actual panel is ~1.547 (3456×2234). Using the LoDPI aspect ratio
+to filter HiDPI modes rejected every mode that System Settings actually shows.
+Similarly, using the LoDPI width to compute half-native set the floor at 1728,
+cutting out the three smallest options (1168, 1312, 1496).
+
+**Fix:** use two separate sources of truth:
+- **Aspect ratio** from `currentMode.width / currentMode.height` — macOS
+  always runs at the native panel aspect ratio, so this is reliable.
+- **Half-native floor** from the largest HiDPI mode matching the native aspect
+  ratio — not from LoDPI modes, which may have a different aspect ratio on
+  non-standard panels.
 
 ## Decision
 
@@ -60,9 +75,10 @@ modes.**
 Filter rules:
 - HiDPI only (`pixelWidth > width`)
 - `isUsableForDesktopGUI()` must be true
-- Must match the native display aspect ratio (within 0.01 tolerance)
-- Logical width must be ≥ half the native width
-- Include the 1:1 native mode (which is LoDPI)
+- Must match the native display aspect ratio (within 0.01 tolerance), derived
+  from the current mode's logical dimensions
+- Logical width must be ≥ half the largest HiDPI width at the native aspect ratio
+- Include the 1:1 native mode (LoDPI) if one exists at the native aspect ratio
 - Deduplicate by logical resolution
 
 A "Show All Resolutions" toggle in the menu bypasses the aspect ratio and
