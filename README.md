@@ -14,8 +14,9 @@ Quick-switch your Mac's display scaling from the menu bar — the same
 3. Open Terminal and run: `xattr -cr /Applications/Rescale.app`
 4. Double-click to launch
 
-Step 3 removes the macOS quarantine flag on unsigned apps. This only needs to
-be done once.
+Step 3 removes the macOS quarantine flag on unsigned apps. Only needed once per
+download. **Updating?** Replace the old Rescale.app in Applications with the new
+one and re-run the `xattr` command.
 
 ## Features
 

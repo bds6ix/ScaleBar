@@ -27,8 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem.button {
-            if let iconURL = Bundle.module.url(forResource: "MenuBarIcon", withExtension: "png", subdirectory: "Resources"),
-               let icon = NSImage(contentsOf: iconURL) {
+            if let icon = Self.loadMenuBarIcon() {
                 icon.isTemplate = true
                 icon.size = NSSize(width: 16, height: 16)
                 button.image = icon
@@ -152,12 +151,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         hint.attributedTitle = NSAttributedString(string: "⌥-click resolution to favorite", attributes: attributes)
         menu.addItem(hint)
 
-        menu.addItem(.separator())
-
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
         let versionItem = NSMenuItem(title: "Rescale v\(version)", action: nil, keyEquivalent: "")
         versionItem.isEnabled = false
+        versionItem.attributedTitle = NSAttributedString(string: "Rescale v\(version)", attributes: attributes)
         menu.addItem(versionItem)
+
+        menu.addItem(.separator())
 
         menu.addItem(
             NSMenuItem(
@@ -201,6 +201,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         DispatchQueue.main.async {
             self.statusItem.button?.performClick(nil)
         }
+    }
+
+    private static func loadMenuBarIcon() -> NSImage? {
+        let bundleName = "Rescale_Rescale.bundle"
+        let candidates = [
+            Bundle.main.bundleURL.appendingPathComponent("Contents/MacOS/\(bundleName)"),
+            Bundle.main.bundleURL.appendingPathComponent(bundleName),
+            Bundle.main.executableURL?.deletingLastPathComponent().appendingPathComponent(bundleName)
+        ]
+        for candidate in candidates {
+            guard let url = candidate,
+                  let bundle = Bundle(url: url),
+                  let iconURL = bundle.url(forResource: "MenuBarIcon", withExtension: "png", subdirectory: "Resources"),
+                  let image = NSImage(contentsOf: iconURL) else { continue }
+            return image
+        }
+        return nil
     }
 
     @objc private func toggleLaunchAtLogin() {
