@@ -25,5 +25,6 @@ cp "$PROJECT_DIR/Info.plist" "$APP_BUNDLE/Contents/"
 
 mkdir -p "$APP_BUNDLE/Contents/Resources"
 cp "$PROJECT_DIR/Sources/Rescale/Resources/AppIcon.icns" "$APP_BUNDLE/Contents/Resources/"
+cp -R "$PROJECT_DIR/.build/release/Rescale_Rescale.bundle" "$APP_BUNDLE/Contents/MacOS/"
 
 echo "Done → $APP_BUNDLE"
