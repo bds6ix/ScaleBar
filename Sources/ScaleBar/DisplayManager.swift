@@ -41,14 +41,20 @@ enum DisplayManager {
             return []
         }
 
-        // Find the true native resolution: the largest 1:1 (LoDPI) mode where pixelWidth == width.
-        let nativeMode = allModes
-            .filter { $0.pixelWidth == $0.width && $0.isUsableForDesktopGUI() }
-            .max(by: { $0.width < $1.width })
-        let nativeWidth = nativeMode?.width ?? 3840
-        let nativeHeight = nativeMode?.height ?? 2160
-        let halfNativeWidth = nativeWidth / 2
-        let nativeAspect = Double(nativeWidth) / Double(nativeHeight)
+        guard let currentMode = CGDisplayCopyDisplayMode(displayID) else { return [] }
+
+        // The current mode's logical dimensions always reflect the native aspect ratio.
+        let nativeAspect = Double(currentMode.width) / Double(currentMode.height)
+
+        // Find the largest HiDPI logical width at the native aspect ratio.
+        // This is more reliable than LoDPI modes for determining the native panel width,
+        // because MacBook displays expose LoDPI modes at a different aspect ratio (16:10)
+        // than the actual panel (~1.547).
+        let maxNativeWidth = allModes
+            .filter { $0.pixelWidth > $0.width && $0.isUsableForDesktopGUI() }
+            .filter { abs(Double($0.width) / Double($0.height) - nativeAspect) < 0.01 }
+            .max(by: { $0.width < $1.width })?.width ?? currentMode.width
+        let halfNativeWidth = maxNativeWidth / 2
 
         var seen = Set<String>()
         var result: [ScaledMode] = []
@@ -78,14 +84,18 @@ enum DisplayManager {
             ))
         }
 
-        // Include the 1:1 native mode (LoDPI — pixelWidth == width).
-        if let nativeMode = nativeMode {
-            let nativeKey = "\(nativeWidth)x\(nativeHeight)"
+        // Include the 1:1 native mode (LoDPI — pixelWidth == width) if one exists
+        // matching the native aspect ratio.
+        if let nativeMode = allModes
+            .filter({ $0.pixelWidth == $0.width && $0.isUsableForDesktopGUI() })
+            .first(where: { abs(Double($0.width) / Double($0.height) - nativeAspect) < 0.01 })
+        {
+            let nativeKey = "\(nativeMode.width)x\(nativeMode.height)"
             if seen.insert(nativeKey).inserted {
                 result.append(ScaledMode(
                     mode: nativeMode,
-                    logicalWidth: nativeWidth,
-                    logicalHeight: nativeHeight
+                    logicalWidth: nativeMode.width,
+                    logicalHeight: nativeMode.height
                 ))
             }
         }

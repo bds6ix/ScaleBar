@@ -28,9 +28,10 @@ swift build -c release   # optimized build
 - The `kCGDisplayShowDuplicateLowResolutionModes` flag is required to get HiDPI
   modes from `CGDisplayCopyAllDisplayModes`. Without it, only LoDPI modes are
   returned.
-- Native resolution is detected by finding the largest LoDPI mode (where
-  `pixelWidth == width`), NOT from `CGDisplayCopyDisplayMode` which returns the
-  current mode's pixel backing.
+- Native aspect ratio comes from `currentMode.width / height` (always correct).
+  Native width for the half-native floor comes from the largest HiDPI mode at
+  that aspect ratio — NOT from LoDPI modes (MacBooks expose LoDPI at 16:10 even
+  when the panel is ~1.547). See `docs/adr/0001-resolution-filtering.md`.
 - `LSUIElement = true` in `Info.plist` makes it a menu bar agent (no Dock icon).
   The code also sets `.accessory` activation policy as a belt-and-suspenders
   measure.
