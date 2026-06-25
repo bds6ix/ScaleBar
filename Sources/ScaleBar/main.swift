@@ -45,6 +45,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         for (index, display) in displays.enumerated() {
             let header = NSMenuItem(title: display.name, action: nil, keyEquivalent: "")
             header.isEnabled = false
+            if let firstMode = display.modes.first {
+                let isPortrait = firstMode.logicalHeight > firstMode.logicalWidth
+                let symbolName = isPortrait ? "rectangle.portrait.fill" : "rectangle.fill"
+                if let icon = NSImage(systemSymbolName: symbolName, accessibilityDescription: isPortrait ? "Portrait" : "Landscape") {
+                    icon.size = NSSize(width: isPortrait ? 9 : 22, height: isPortrait ? 22 : 9)
+                    header.image = icon
+                }
+            }
             menu.addItem(header)
 
             let currentMode = DisplayManager.currentMode(for: display.id)
