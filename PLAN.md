@@ -43,7 +43,7 @@ Check a box when a chunk is merged and its checkpoint passes.
 > Goal: an end-to-end pipeline with near-zero code. By the end of this phase, code on your
 > machine builds in CI on GitHub. Everything after this grows muscle onto the skeleton.
 
-- [ ] **0.1 — Local project + first commit**
+- [x] **0.1 — Local project + first commit**
   - Create `Package.swift` (executable target) and a `main.swift` that launches an
     `NSApplication` with a menu bar icon and a single "Quit" item.
   - `git init`, add `.gitignore`, first commit.
@@ -51,17 +51,17 @@ Check a box when a chunk is merged and its checkpoint passes.
     why `.accessory` activation policy, git init/staging/commit.
   - *Checkpoint:* `swift run` puts a quittable icon in your menu bar.
 
-- [ ] **0.2 — The `.app` bundle**
+- [x] **0.2 — The `.app` bundle**
   - Add `Info.plist` (with `LSUIElement`) and `Scripts/make-app.sh` to assemble a real bundle.
   - *Learn:* why a menu bar agent needs a bundle, what `LSUIElement` does, the anatomy of a `.app`.
   - *Checkpoint:* a double-clickable `ScaleBar.app` that runs with no Dock icon.
 
-- [ ] **0.3 — Connect to GitHub**
+- [x] **0.3 — Connect to GitHub**
   - Create the empty remote repo, `git remote add origin`, push `main`.
   - *Learn:* remotes, HTTPS vs SSH auth, local↔remote relationship, branch tracking.
   - *Checkpoint:* your code is on GitHub.
 
-- [ ] **0.4 — CI that builds**
+- [x] **0.4 — CI that builds**
   - A GitHub Actions workflow that compiles on every push and PR (build only — no release yet).
   - *Learn:* runners, workflow triggers, jobs/steps, YAML structure, reading the Actions log.
   - *Checkpoint:* a green check on your first PR.
@@ -73,13 +73,13 @@ Check a box when a chunk is merged and its checkpoint passes.
 > The real logic, isolated in `DisplayManager.swift`. Three chunks because each is a distinct
 > concept worth understanding on its own.
 
-- [ ] **1.1 — Enumerate displays**
+- [x] **1.1 — Enumerate displays**
   - List connected displays + names; show them as disabled menu items so you can see it working.
   - *Learn:* `CGGetActiveDisplayList`, matching a `CGDirectDisplayID` to an `NSScreen` for the
     human-readable name.
   - *Checkpoint:* your menu shows "DELL U3223QE" twice.
 
-- [ ] **1.2 — Read scaled modes** *(meatiest chunk)*
+- [x] **1.2 — Read scaled modes** *(meatiest chunk)*
   - Pull the HiDPI "looks like" resolutions; filter, dedupe, sort smallest → largest width.
   - *Learn:* the `kCGDisplayShowDuplicateLowResolutionModes` flag, HiDPI vs LoDPI (framebuffer
     wider than logical width), `isUsableForDesktopGUI()`.
@@ -88,7 +88,7 @@ Check a box when a chunk is merged and its checkpoint passes.
     known displayplacer resolutions here.
   - *Checkpoint:* the menu lists the scale options (current one not yet marked).
 
-- [ ] **1.3 — Apply a resolution**
+- [x] **1.3 — Apply a resolution**
   - Wire a click to actually switch.
   - *Learn:* the `CGBeginDisplayConfiguration` → `CGConfigureDisplayWithDisplayMode` →
     `CGCompleteDisplayConfiguration` transaction, and the duplicate-mode quirk (some modes fail

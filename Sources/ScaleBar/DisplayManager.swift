@@ -95,6 +95,23 @@ enum DisplayManager {
         return result
     }
 
+    static func applyMode(_ mode: CGDisplayMode, to displayID: CGDirectDisplayID) {
+        var config: CGDisplayConfigRef?
+        let beginErr = CGBeginDisplayConfiguration(&config)
+        guard beginErr == .success, let config = config else { return }
+
+        CGConfigureDisplayWithDisplayMode(config, displayID, mode, nil)
+
+        let completeErr = CGCompleteDisplayConfiguration(config, .permanently)
+        if completeErr != .success {
+            CGCancelDisplayConfiguration(config)
+        }
+    }
+
+    static func currentMode(for displayID: CGDirectDisplayID) -> CGDisplayMode? {
+        CGDisplayCopyDisplayMode(displayID)
+    }
+
     private static func screenName(for displayID: CGDirectDisplayID) -> String? {
         NSScreen.screens.first {
             $0.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID == displayID
