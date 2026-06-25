@@ -99,15 +99,21 @@ Check a box when a chunk is merged and its checkpoint passes.
 
 ## Phase 2 — Menu polish
 
-- [ ] **2.1 — Real menu structure**
-  - Per-display sections, checkmark the active scale, friendly "Larger Text / More Space" labels.
-  - *Learn:* `NSMenuItem` targets/actions, `representedObject` for attaching data, `state` for
-    checkmarks.
-
-- [ ] **2.2 — Live refresh**
-  - Rebuild the menu when it opens; handle edge cases (no displays, monitor unplugged).
-  - *Learn:* `NSMenuDelegate.menuWillOpen` for always-fresh state.
+- [x] **2.1 — Live refresh**
+  - Rebuild the menu when it opens via `NSMenuDelegate.menuWillOpen`; handle edge cases
+    (no displays, monitor unplugged). Fixed native resolution detection for MacBook displays
+    (LoDPI modes report wrong aspect ratio on non-standard panels).
+  - *Learn:* `NSMenuDelegate`, native aspect ratio detection pitfalls.
   - *Checkpoint:* unplug/replug a monitor and the menu stays correct.
+  - *Note:* per-display sections, checkmarks, targets/actions, and `representedObject` were
+    completed during Phase 1 chunks.
+
+- [x] **2.2 — Orientation icons**
+  - SF Symbol filled rectangles next to display names showing landscape vs portrait orientation.
+  - *Learn:* `NSMenuItem.image`, SF Symbols as vectors with custom sizing.
+  - *Deferred:* friendly "Larger Text / More Space" labels — may revisit with a custom
+    `NSPopover` UI. Favorites feature (pin preferred resolutions via `UserDefaults`)
+    identified as a future enhancement.
 
 ---
 
