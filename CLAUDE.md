@@ -42,7 +42,9 @@ swift build -c release   # optimized build
 - `LSUIElement = true` in `Info.plist` makes it a menu bar agent (no Dock icon).
   The code also sets `.accessory` activation policy as a belt-and-suspenders
   measure.
-- The `.app` bundle is just `Contents/MacOS/<binary>` + `Contents/Info.plist`.
+- The `.app` bundle contains `Contents/MacOS/<binary>`, `Contents/MacOS/Rescale_Rescale.bundle`
+  (SPM resource bundle with menu bar icon), `Contents/Resources/AppIcon.icns`,
+  and `Contents/Info.plist`.
 - Favorites stored in `UserDefaults` keyed by `"favorites"`, each entry is
   `"displayID:widthxheight"`.
 
@@ -53,6 +55,8 @@ swift build -c release   # optimized build
 - Resolution switching via CGDisplayConfiguration transaction
 - Checkmark on active resolution
 - Live menu refresh via NSMenuDelegate.menuWillOpen
+- Custom scale-arrows menu bar icon (template image, adapts to light/dark)
+- Rr brand app icon (.icns) for Finder/Activity Monitor
 - Orientation icons (filled SF Symbol rectangles) on display names
 - Show All Resolutions toggle (bypasses filtering)
 - Favorites: Option-click to star, Favorites Only toggle, UserDefaults persistence
@@ -69,6 +73,7 @@ swift build -c release   # optimized build
 
 ## Plan
 
-See `PLAN.md` in this directory. Phases 0–2 complete. Phase 3 (release &
-distribute) is next. Future phases (scriptability, Stream Deck, advanced UI)
-are parked.
+See `PLAN.md` in this directory. Phases 0–2 complete. Phase 3 in progress
+(3.1 release workflow and 3.2 icons done; 3.3 landing page and 3.4 README
+remaining). Future phases (launch at login, scriptability, Stream Deck,
+advanced UI) are parked.

@@ -189,6 +189,13 @@ Check a box when a chunk is merged and its checkpoint passes.
   `open "rescale://set?..."`. Requires the URL scheme above.
 - [ ] **Scale picker** — property inspector to choose display + scale per button.
 
+### Quality of life
+
+- [ ] **Launch at login** — add a "Launch at Login" toggle to the menu using
+  `SMAppService.mainApp.register()` (macOS 13+). One menu item, no helper app
+  needed.
+  - *Learn:* `ServiceManagement` framework, `SMAppService` API.
+
 ### Advanced UI
 
 - [ ] **Custom `NSPopover` / `NSPanel`** — replace the `NSMenu` dropdown with a
