@@ -10,8 +10,8 @@ Quick-switch your Mac's display scaling from the menu bar — the same
 ## Install
 
 1. Download **Rescale.zip** from the [latest release](../../releases/latest)
-2. Unzip and move **Rescale.app** wherever you like (e.g. Applications)
-3. Open Terminal and run: `xattr -cr /path/to/Rescale.app`
+2. Unzip and move **Rescale.app** to your Applications folder
+3. Open Terminal and run: `xattr -cr /Applications/Rescale.app`
 4. Double-click to launch
 
 Step 3 removes the macOS quarantine flag on unsigned apps. This only needs to
