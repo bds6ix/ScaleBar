@@ -148,7 +148,7 @@ Check a box when a chunk is merged and its checkpoint passes.
   - *Checkpoint:* `Rescale.app` shows the Rr icon in Finder and the scale
     arrows in the menu bar.
 
-- [ ] **3.3 — Landing page**
+- [x] **3.3 — Landing page**
   - A single-page site on GitHub Pages: screenshot, what it does, download link
     (pointing to the latest GitHub Release), and a Buy Me a Coffee / Ko-fi tip
     jar button.
@@ -156,7 +156,7 @@ Check a box when a chunk is merged and its checkpoint passes.
   - *Checkpoint:* a live URL like `bds6ix.github.io/Rescale` with a working
     download link.
 
-- [ ] **3.4 — README polish & Gatekeeper instructions**
+- [x] **3.4 — README polish & Gatekeeper instructions**
   - Update README with: screenshot, installation instructions (including the
     unsigned app Gatekeeper workaround), link to the landing page, tip jar
     badge.
@@ -164,7 +164,7 @@ Check a box when a chunk is merged and its checkpoint passes.
   - *Checkpoint:* a visitor to the GitHub repo can figure out what this is,
     download it, and run it within 60 seconds.
 
-- [ ] **3.5 — Share it**
+- [x] **3.5 — Share it**
   - Post to r/macapps, r/mac, and any other relevant communities. Optionally
     list on Product Hunt.
   - *Learn:* the art of the launch post — what to say, where to post, how to
