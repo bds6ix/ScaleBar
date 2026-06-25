@@ -191,7 +191,7 @@ Check a box when a chunk is merged and its checkpoint passes.
 
 ### Quality of life
 
-- [ ] **Launch at login** — add a "Launch at Login" toggle to the menu using
+- [x] **Launch at login** — add a "Launch at Login" toggle to the menu using
   `SMAppService.mainApp.register()` (macOS 13+). One menu item, no helper app
   needed.
   - *Learn:* `ServiceManagement` framework, `SMAppService` API.

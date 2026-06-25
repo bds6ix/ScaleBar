@@ -1,4 +1,5 @@
 import AppKit
+import ServiceManagement
 
 final class ModeChoice: NSObject {
     let displayID: CGDirectDisplayID
@@ -131,6 +132,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         toggleItem.state = showAllModes ? .on : .off
         menu.addItem(toggleItem)
 
+        let loginItem = NSMenuItem(
+            title: "Launch at Login",
+            action: #selector(toggleLaunchAtLogin),
+            keyEquivalent: ""
+        )
+        loginItem.target = self
+        loginItem.state = SMAppService.mainApp.status == .enabled ? .on : .off
+        menu.addItem(loginItem)
+
         menu.addItem(.separator())
 
         let hint = NSMenuItem(title: "⌥-click resolution to favorite", action: nil, keyEquivalent: "")
@@ -190,6 +200,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         favoritesOnly.toggle()
         DispatchQueue.main.async {
             self.statusItem.button?.performClick(nil)
+        }
+    }
+
+    @objc private func toggleLaunchAtLogin() {
+        do {
+            if SMAppService.mainApp.status == .enabled {
+                try SMAppService.mainApp.unregister()
+            } else {
+                try SMAppService.mainApp.register()
+            }
+        } catch {
+            NSLog("Launch at login toggle failed: \(error)")
         }
     }
 }
