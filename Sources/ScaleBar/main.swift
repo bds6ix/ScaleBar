@@ -1,6 +1,5 @@
 import AppKit
 
-// Bundles a display ID and mode together so a menu item knows what to apply.
 final class ModeChoice: NSObject {
     let displayID: CGDirectDisplayID
     let mode: CGDisplayMode
@@ -11,7 +10,7 @@ final class ModeChoice: NSObject {
     }
 }
 
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem!
     private var showAllModes = false
 
@@ -22,13 +21,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             button.image = NSImage(systemSymbolName: "display", accessibilityDescription: "ScaleBar")
         }
 
-        rebuildMenu()
+        let menu = NSMenu()
+        menu.delegate = self
+        statusItem.menu = menu
     }
 
-    private func rebuildMenu() {
-        let menu = NSMenu()
+    // Called every time the user clicks the menu bar icon, before the menu appears.
+    func menuWillOpen(_ menu: NSMenu) {
+        rebuildMenu(menu)
+    }
+
+    private func rebuildMenu(_ menu: NSMenu) {
+        menu.removeAllItems()
 
         let displays = DisplayManager.connectedDisplays(showAll: showAllModes)
+
+        if displays.isEmpty {
+            let item = NSMenuItem(title: "No displays found", action: nil, keyEquivalent: "")
+            item.isEnabled = false
+            menu.addItem(item)
+        }
+
         for (index, display) in displays.enumerated() {
             let header = NSMenuItem(title: display.name, action: nil, keyEquivalent: "")
             header.isEnabled = false
@@ -45,7 +58,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 item.target = self
                 item.representedObject = ModeChoice(displayID: display.id, mode: mode.mode)
 
-                // Checkmark the active resolution.
                 if let current = currentMode,
                    current.width == mode.logicalWidth,
                    current.height == mode.logicalHeight {
@@ -79,19 +91,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 keyEquivalent: "q"
             )
         )
-        statusItem.menu = menu
     }
 
     @objc private func applyResolution(_ sender: NSMenuItem) {
         guard let choice = sender.representedObject as? ModeChoice else { return }
         DisplayManager.applyMode(choice.mode, to: choice.displayID)
-        rebuildMenu()
     }
 
     @objc private func toggleShowAll() {
         showAllModes.toggle()
-        rebuildMenu()
-        // Reopen the menu so the user sees the change without an extra click.
         DispatchQueue.main.async {
             self.statusItem.button?.performClick(nil)
         }
