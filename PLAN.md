@@ -112,8 +112,16 @@ Check a box when a chunk is merged and its checkpoint passes.
   - SF Symbol filled rectangles next to display names showing landscape vs portrait orientation.
   - *Learn:* `NSMenuItem.image`, SF Symbols as vectors with custom sizing.
   - *Deferred:* friendly "Larger Text / More Space" labels — may revisit with a custom
-    `NSPopover` UI. Favorites feature (pin preferred resolutions via `UserDefaults`)
-    identified as a future enhancement.
+    `NSPopover` UI.
+
+- [x] **2.3 — Favorites**
+  - Option-click a resolution to toggle it as a favorite (★/☆). Favorites stored in
+    `UserDefaults` for persistence across launches. "Favorites Only" toggle filters the menu
+    to just starred resolutions. Dim `⌥-click to favorite` hint at the bottom for
+    discoverability.
+  - *Learn:* `NSEvent.modifierFlags` for detecting Option-click, `UserDefaults` for
+    lightweight persistence, `NSMenuItem.alternate` considerations.
+  - *Checkpoint:* Option-click stars a resolution, "Favorites Only" shows only starred items.
 
 ---
 

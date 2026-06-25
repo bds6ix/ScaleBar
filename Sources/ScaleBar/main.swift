@@ -3,16 +3,24 @@ import AppKit
 final class ModeChoice: NSObject {
     let displayID: CGDirectDisplayID
     let mode: CGDisplayMode
+    let favoriteKey: String
 
-    init(displayID: CGDirectDisplayID, mode: CGDisplayMode) {
+    init(displayID: CGDirectDisplayID, mode: CGDisplayMode, logicalWidth: Int, logicalHeight: Int) {
         self.displayID = displayID
         self.mode = mode
+        self.favoriteKey = "\(displayID):\(logicalWidth)x\(logicalHeight)"
     }
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem!
     private var showAllModes = false
+    private var favoritesOnly = false
+
+    private var favorites: Set<String> {
+        get { Set(UserDefaults.standard.stringArray(forKey: "favorites") ?? []) }
+        set { UserDefaults.standard.set(Array(newValue), forKey: "favorites") }
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -26,7 +34,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusItem.menu = menu
     }
 
-    // Called every time the user clicks the menu bar icon, before the menu appears.
     func menuWillOpen(_ menu: NSMenu) {
         rebuildMenu(menu)
     }
@@ -35,6 +42,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.removeAllItems()
 
         let displays = DisplayManager.connectedDisplays(showAll: showAllModes)
+        let currentFavorites = favorites
+        let hasFavorites = !currentFavorites.isEmpty
 
         if displays.isEmpty {
             let item = NSMenuItem(title: "No displays found", action: nil, keyEquivalent: "")
@@ -58,13 +67,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let currentMode = DisplayManager.currentMode(for: display.id)
 
             for mode in display.modes {
+                let choice = ModeChoice(
+                    displayID: display.id,
+                    mode: mode.mode,
+                    logicalWidth: mode.logicalWidth,
+                    logicalHeight: mode.logicalHeight
+                )
+                let isFavorite = currentFavorites.contains(choice.favoriteKey)
+
+                if favoritesOnly && !isFavorite {
+                    continue
+                }
+
+                let star = isFavorite ? "★ " : "☆ "
                 let item = NSMenuItem(
-                    title: "  \(mode.label)",
-                    action: #selector(applyResolution(_:)),
+                    title: "  \(star)\(mode.label)",
+                    action: #selector(handleResolutionClick(_:)),
                     keyEquivalent: ""
                 )
                 item.target = self
-                item.representedObject = ModeChoice(displayID: display.id, mode: mode.mode)
+                item.representedObject = choice
 
                 if let current = currentMode,
                    current.width == mode.logicalWidth,
@@ -82,6 +104,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         menu.addItem(.separator())
 
+        if hasFavorites {
+            let favToggle = NSMenuItem(
+                title: "Favorites Only",
+                action: #selector(toggleFavoritesOnly),
+                keyEquivalent: ""
+            )
+            favToggle.target = self
+            favToggle.state = favoritesOnly ? .on : .off
+            menu.addItem(favToggle)
+        }
+
         let toggleItem = NSMenuItem(
             title: "Show All Resolutions",
             action: #selector(toggleShowAll),
@@ -90,6 +123,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         toggleItem.target = self
         toggleItem.state = showAllModes ? .on : .off
         menu.addItem(toggleItem)
+
+        menu.addItem(.separator())
+
+        let hint = NSMenuItem(title: "⌥-click resolution to favorite", action: nil, keyEquivalent: "")
+        hint.isEnabled = false
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: NSFont.menuFont(ofSize: 11),
+            .foregroundColor: NSColor.tertiaryLabelColor
+        ]
+        hint.attributedTitle = NSAttributedString(string: "⌥-click resolution to favorite", attributes: attributes)
+        menu.addItem(hint)
 
         menu.addItem(.separator())
         menu.addItem(
@@ -101,13 +145,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         )
     }
 
-    @objc private func applyResolution(_ sender: NSMenuItem) {
+    @objc private func handleResolutionClick(_ sender: NSMenuItem) {
         guard let choice = sender.representedObject as? ModeChoice else { return }
-        DisplayManager.applyMode(choice.mode, to: choice.displayID)
+
+        let optionHeld = NSEvent.modifierFlags.contains(.option)
+
+        if optionHeld {
+            var faves = favorites
+            if faves.contains(choice.favoriteKey) {
+                faves.remove(choice.favoriteKey)
+            } else {
+                faves.insert(choice.favoriteKey)
+            }
+            favorites = faves
+            DispatchQueue.main.async {
+                self.statusItem.button?.performClick(nil)
+            }
+        } else {
+            DisplayManager.applyMode(choice.mode, to: choice.displayID)
+        }
     }
 
     @objc private func toggleShowAll() {
         showAllModes.toggle()
+        DispatchQueue.main.async {
+            self.statusItem.button?.performClick(nil)
+        }
+    }
+
+    @objc private func toggleFavoritesOnly() {
+        favoritesOnly.toggle()
         DispatchQueue.main.async {
             self.statusItem.button?.performClick(nil)
         }
