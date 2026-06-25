@@ -24,6 +24,9 @@
     <key>LSUIElement</key>
     <true/>
 
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
 </dict>

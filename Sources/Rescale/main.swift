@@ -26,7 +26,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "display", accessibilityDescription: "Rescale")
+            if let iconURL = Bundle.module.url(forResource: "MenuBarIcon", withExtension: "png", subdirectory: "Resources"),
+               let icon = NSImage(contentsOf: iconURL) {
+                icon.isTemplate = true
+                icon.size = NSSize(width: 16, height: 16)
+                button.image = icon
+            } else {
+                button.image = NSImage(systemSymbolName: "display", accessibilityDescription: "Rescale")
+            }
         }
 
         let menu = NSMenu()

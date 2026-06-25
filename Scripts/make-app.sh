@@ -23,4 +23,7 @@ mkdir -p "$APP_BUNDLE/Contents/MacOS"
 cp "$BINARY" "$APP_BUNDLE/Contents/MacOS/$APP_NAME"
 cp "$PROJECT_DIR/Info.plist" "$APP_BUNDLE/Contents/"
 
+mkdir -p "$APP_BUNDLE/Contents/Resources"
+cp "$PROJECT_DIR/Sources/Rescale/Resources/AppIcon.icns" "$APP_BUNDLE/Contents/Resources/"
+
 echo "Done → $APP_BUNDLE"

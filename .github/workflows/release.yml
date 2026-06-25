@@ -19,8 +19,10 @@ jobs:
       - name: Assemble app bundle
         run: |
           mkdir -p Rescale.app/Contents/MacOS
+          mkdir -p Rescale.app/Contents/Resources
           cp .build/release/Rescale Rescale.app/Contents/MacOS/Rescale
           cp Info.plist Rescale.app/Contents/
+          cp Sources/Rescale/Resources/AppIcon.icns Rescale.app/Contents/Resources/
 
       - name: Zip app bundle
         run: zip -r Rescale.zip Rescale.app

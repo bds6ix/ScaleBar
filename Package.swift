@@ -12,7 +12,8 @@ let package = Package(
         // Swift treats Sources/Rescale/main.swift as the program entry point.
         .executableTarget(
             name: "Rescale",
-            path: "Sources/Rescale"
+            path: "Sources/Rescale",
+            resources: [.copy("Resources")]
         )
     ]
 )
